@@ -1,22 +1,29 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, ForbiddenException, UsePipes } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update.user.dto';
 import { BooleanMessage } from './interface/boolean-message.interface';
 import { LoginUserDto } from './dto/login-user.dto';
 import { LoginUser } from './interface/login-user.interface';
+import { JwtAuthGuard } from 'src/middlewares/logger.middleware';
+import { request } from 'express';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { TrimPipe } from 'src/pipes/trim.pipe';
+
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
 
   @Post("signup")
+  @UsePipes(new TrimPipe())
   create(@Body() createUserDto: CreateUserDto): Promise<BooleanMessage> {
     return this.userService.create(createUserDto);
   }
 
   @Post("login")
-  login(@Body() loginUserDto: LoginUserDto ): Promise<LoginUser>{
+  @UsePipes(new TrimPipe())
+  login(@Body() loginUserDto: LoginUserDto): Promise<LoginUser> {
     return this.userService.login(loginUserDto)
   }
 
@@ -26,8 +33,17 @@ export class UserController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(+id);
+  @UseGuards(JwtAuthGuard)
+  async findOne(@Param('id') _id: string, @CurrentUser() User: any) {
+    console.log("user", User)
+    console.log("userId", _id)
+    const tokenUserId = User.id;
+    console.log("tokenUserId", tokenUserId)
+
+    if (tokenUserId !== _id) {
+      throw new ForbiddenException("You do not have permission to access this resource.");
+    }
+    return this.userService.findOne(_id);
   }
 
   @Patch(':id')

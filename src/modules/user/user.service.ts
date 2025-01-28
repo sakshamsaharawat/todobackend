@@ -1,6 +1,6 @@
 import { LoginUserDto } from './dto/login-user.dto';
 import { ConfigService } from '@nestjs/config';
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update.user.dto';
 import { InjectModel } from '@nestjs/mongoose';
@@ -36,11 +36,15 @@ export class UserService {
 
   async login(loginUserDto: LoginUserDto): Promise<LoginUser> {
     const { email, password } = loginUserDto;
-    const user = await (this.userModel.findOne({ email: email.toLowerCase() }));
+    const user = await (this.userModel.findOne({ email: email.toLowerCase() })).select('+password');
+    console.log(user)
     if (!user) {
       throw new BadRequestException("User not found.")
     }
     const isPasswordMatched = await bcrypt.compare(password, user.password);
+    console.log(password)
+    console.log(user.password)
+
     if (!isPasswordMatched) {
       throw new UnauthorizedException("Invalid credentials.")
     }
@@ -52,8 +56,12 @@ export class UserService {
     return `This action returns all user`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(_id: string) {
+    const user = await this.userModel.findById({ _id }).select('+password')
+    if (!user) {
+      throw new NotFoundException("User not found.")
+    }
+    return user;
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
