@@ -1,30 +1,26 @@
 import {
-  IsBoolean,
   IsDateString,
   IsMongoId,
   IsNotEmpty,
   IsString,
+  Matches,
 } from 'class-validator';
 import { Types } from 'mongoose';
 
 export class TaskDto {
-  @IsNotEmpty({ message: 'User ID is required.' })
-  @IsMongoId({ message: 'User ID must be a valid MongoDB ObjectId.' })
-  user_id: Types.ObjectId;
 
   @IsNotEmpty({ message: 'Title is required.' })
   @IsString({ message: 'Title must be a string.' })
+  @Matches(/^\S*$/, { message: 'Title cannot contain spaces.' })
   title: string;
 
   @IsNotEmpty({ message: 'Description is required.' })
   @IsString({ message: 'Description must be a string.' })
+  @Matches(/^\S*$/, { message: 'Description cannot contain spaces.' })
   description: string;
 
   @IsNotEmpty({ message: 'Date is required.' })
-  @IsDateString()
+  @Matches(/^\d{4}-\d{2}-\d{2}$/, { message: 'Date must be in YYYY-MM-DD format.' })
+  @IsDateString({}, { message: 'Date must be a valid ISO 8601 date string.' })
   date: string;
-
-  @IsNotEmpty({ message: 'isDeleted flag is required.' })
-  @IsBoolean({ message: 'isDeleted must be a boolean value.' })
-  isDeleted: boolean;
 }

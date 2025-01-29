@@ -35,11 +35,7 @@ export class UserController {
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   async findOne(@Param('id') _id: string, @CurrentUser() User: any) {
-    console.log("user", User)
-    console.log("userId", _id)
     const tokenUserId = User.id;
-    console.log("tokenUserId", tokenUserId)
-
     if (tokenUserId !== _id) {
       throw new ForbiddenException("You do not have permission to access this resource.");
     }

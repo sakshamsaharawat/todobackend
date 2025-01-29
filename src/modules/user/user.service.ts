@@ -37,14 +37,10 @@ export class UserService {
   async login(loginUserDto: LoginUserDto): Promise<LoginUser> {
     const { email, password } = loginUserDto;
     const user = await (this.userModel.findOne({ email: email.toLowerCase() })).select('+password');
-    console.log(user)
     if (!user) {
       throw new BadRequestException("User not found.")
     }
     const isPasswordMatched = await bcrypt.compare(password, user.password);
-    console.log(password)
-    console.log(user.password)
-
     if (!isPasswordMatched) {
       throw new UnauthorizedException("Invalid credentials.")
     }
