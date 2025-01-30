@@ -1,19 +1,20 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Schema as MongooseSchema, Types } from 'mongoose';
+import { Types, Schema as MongooseSchema } from 'mongoose';
 
 export type ListsDocument = Lists & Document;
+
 @Schema({ timestamps: true })
 export class Lists {
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
   user_id: Types.ObjectId;
 
-  @Prop({})
+  @Prop({ required: true })
   title: string;
 
-  @Prop({})
+  @Prop({ required: true })
   color_code: string;
 
   @Prop({ default: false })
   isDeleted: boolean;
 }
-export const ListSchema = SchemaFactory.createForClass(Lists);
+export const ListsSchema = SchemaFactory.createForClass(Lists);

@@ -4,7 +4,9 @@ import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserModule } from './modules/user/user.module';
-import { TagModule } from './modules/tags/tag.module';
+import { TagModule } from './modules/tag/tag.module';
+import { ListModule } from './modules/list/list.module';
+import { TaskModule } from './modules/task/task.module';
 
 
 @Module({
@@ -21,8 +23,10 @@ import { TagModule } from './modules/tags/tag.module';
     }),
     UserModule,
     TagModule,
+    ListModule,
+    TaskModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

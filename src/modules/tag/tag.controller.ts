@@ -1,13 +1,14 @@
-import { CurrentUser } from './../../common/decorators/current-user.decorator';
+import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
 import { TagService } from "./tag.service";
-import { CreateTagDto } from "./dto/tag.create.dto";
-import { UpdateTagDto } from "./dto/tag.update.dto";
+import { CreateTagDto } from "./dto/tag-create.dto";
+import { UpdateTagDto } from "./dto/tag-update.dto";
 import { JwtAuthGuard } from "src/middlewares/logger.middleware";
 import { CurrentUserType } from "../user/interface/current-user.interface";
 import { TagGetDto } from './dto/tag-get-dto';
 import { Tags } from './schema/tag.schema';
 import { BooleanMessage } from './interface/boolean-message.interface';
+import { TagDeleteDto } from './dto/tag-delete.dto';
 
 @Controller('tag')
 export class TagController {
@@ -33,12 +34,13 @@ export class TagController {
 
     @Patch()
     @UseGuards(JwtAuthGuard)
-    update(@Body() updateTagDto: UpdateTagDto, @CurrentUser() user: CurrentUserType) {
+    update(@Body() updateTagDto: UpdateTagDto, @CurrentUser() user: CurrentUserType): Promise<{ success: boolean, message: string, data: Tags }> {
         return this.TagService.update(updateTagDto, user);
     }
 
     @Delete(':id')
-    remove(@Param('id') id: string) {
-        return this.TagService.remove(+id);
+    @UseGuards(JwtAuthGuard)
+    remove(@Param() tagDeleteDto: TagDeleteDto, @CurrentUser() user: CurrentUserType): Promise<BooleanMessage> {
+        return this.TagService.remove(tagDeleteDto, user);
     }
 }

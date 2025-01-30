@@ -17,6 +17,12 @@ export class Task {
   @Prop({ required: true })
   date: Date;
 
+  @Prop({ type: [MongooseSchema.ObjectId], ref: "Tags", required: true })
+  tag_ids: Types.ObjectId[];
+
+  @Prop({ type: MongooseSchema.ObjectId, ref: "Lists", required: true })
+  list_id: Types.ObjectId;
+
   @Prop({ default: false })
   isDeleted: boolean;
 }
