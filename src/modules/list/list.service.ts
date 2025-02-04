@@ -34,10 +34,8 @@ export class ListService {
     async findAll(user: CurrentUserType): Promise<{ success: boolean, message: string, data: Lists[] }> {
         const user_id = new mongoose.Types.ObjectId(user.id);
         const Lists = await this.ListModel.find({ user_id, isDeleted: false });
-        if (!Lists.length) {
-            throw new NotFoundException("Lists not found.");
-        }
-        return { success: true, message: "Lists fetched successfully.", data: Lists };
+
+        return { success: true, message: Lists.length ? "Lists fetched successfully." : "No list found", data: Lists };
     }
 
     async findOne(ListGetDto: ListGetDto, user: CurrentUserType): Promise<{ success: boolean, message: string, data: Lists }> {

@@ -34,10 +34,7 @@ export class TagService {
     async findAll(user: CurrentUserType): Promise<{ success: boolean, message: string, data: Tags[] }> {
         const user_id = new mongoose.Types.ObjectId(user.id);
         const tags = await this.tagModel.find({ user_id, isDeleted: false });
-        if (!tags.length) {
-            throw new NotFoundException("Tags not found.");
-        }
-        return { success: true, message: "Tags fetched successfully.", data: tags };
+        return { success: true, message: tags.length ? "Tags fetched successfully." : "Tag not found", data: tags };
     }
 
     async findOne(tagGetDto: TagGetDto, user: CurrentUserType): Promise<{ success: boolean, message: string, data: Tags }> {
