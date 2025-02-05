@@ -1,11 +1,13 @@
 import { Transform } from 'class-transformer';
-import { IsNotEmpty, IsString, Matches } from 'class-validator';
+import { IsNotEmpty, IsString, Matches, MinLength, ValidateIf } from 'class-validator';
+
 
 export class CreateListDto {
-  @IsNotEmpty({ message: 'Title is required.' })
-  @IsString({ message: 'Title must be a string.' })
-  @Transform(({ value }) => (typeof value === "string" ? value.trim() : value))
-  @Matches(/^(?!.*\s{2,})[A-Za-z0-9]+(?:\s[A-Za-z0-9]+)*$/, { message: 'Title cannot have consecutive spaces.' })
+  @IsNotEmpty({ message: "Title is required." })
+  @IsString({ message: "Title must be a string." })
+  @MinLength(3, { message: "Title must contain atleast 3 characters." })
+  @Transform(({ value }) => (typeof value === "string" ? value.trim() : value), { toClassOnly: true })
+  @Matches(/^(?!.*\s{2,})/, { message: "Title cannot contain consecutive spaces." })
   title: string;
 
   @IsNotEmpty({ message: 'Color_code is required.' })

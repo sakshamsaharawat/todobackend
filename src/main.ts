@@ -9,7 +9,7 @@ async function bootstrap() {
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
   });
-  app.useGlobalPipes(new ValidationPipe({ transform: true }));
+  app.useGlobalPipes(new ValidationPipe({ transform: true, stopAtFirstError: true, }));
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();

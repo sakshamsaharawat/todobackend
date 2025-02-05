@@ -18,7 +18,7 @@ export class TagService {
     ) { }
 
     async create(createTagDto: CreateTagDto, user: CurrentUserType): Promise<BooleanMessage> {
-        const isTitleExist = await this.tagModel.findOne({ title: { $regex: new RegExp(`^${createTagDto.title}$`, "i") } });
+        const isTitleExist = await this.tagModel.findOne({ title: { $regex: new RegExp(`^${createTagDto.title}$`, "i") }, user_id: user.id });
         if (isTitleExist) {
             throw new BadRequestException("Tag already exist.");
         }
