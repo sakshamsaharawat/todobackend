@@ -26,9 +26,9 @@ export class CreateTaskDto {
   description: string;
 
   @IsNotEmpty({ message: 'Date is required.' })
-  @Matches(/^\d{4}-\d{2}-\d{2}$/, { message: 'Date must be in YYYY-MM-DD format.' })
-  @IsDateString({}, { message: 'Date must be a valid ISO 8601 date string.' })
-  date: Date;
+  // @Matches(/^\d{4}-\d{2}-\d{2}$/, { message: 'Date must be in YYYY-MM-DD format.' })
+  // @IsDateString({}, { message: 'Date must be a valid ISO 8601 date string.' })
+  due_date: string;
 
   @IsNotEmpty({ message: 'tagIds are required.' })
   @IsArray({ message: 'tagIds must be an array.' })

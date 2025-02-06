@@ -15,7 +15,7 @@ export class Task {
   description: string;
 
   @Prop({ required: true })
-  date: Date;
+  due_date: string;
 
   @Prop({ type: [MongooseSchema.ObjectId], ref: "Tags", required: true })
   tag_ids: Types.ObjectId[];

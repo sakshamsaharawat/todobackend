@@ -42,7 +42,7 @@ export class TaskService {
         const newTask = new Task();
         newTask.title = createTaskDto.title;
         newTask.description = createTaskDto.description;
-        newTask.date = createTaskDto.date;
+        newTask.due_date = createTaskDto.due_date;
         newTask.user_id = user_id;
         newTask.tag_ids = createTaskDto.tag_ids.map((id: string) => new mongoose.Types.ObjectId(id));
         newTask.list_id = new mongoose.Types.ObjectId(createTaskDto.list_id);
