@@ -5,6 +5,7 @@ import { TaskService } from './task.service';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { CurrentUserType } from '../user/interface/current-user.interface';
 import { CreateTask } from './interface/create-task.interface';
+import { GetTask } from './interface/get-task.interface';
 
 @Controller('task')
 export class TaskController {
@@ -18,8 +19,8 @@ export class TaskController {
 
     @Get()
     @UseGuards(JwtAuthGuard)
-    findAll(@CurrentUser() user: CurrentUserType) {
-        return this.TaskService.findAll();
+    findAll(@CurrentUser() user: CurrentUserType): Promise<GetTask> {
+        return this.TaskService.findAll(user);
     }
 
     @Get('get-one')
