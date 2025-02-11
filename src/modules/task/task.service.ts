@@ -1,3 +1,4 @@
+import { GetTask } from './interface/get-task.interface';
 import { CurrentUser } from './../../common/decorators/current-user.decorator';
 import { BadRequestException, Injectable, Type } from '@nestjs/common';
 import { Task } from './schemas/task.schema';
@@ -8,7 +9,7 @@ import { CurrentUserType } from '../user/interface/current-user.interface';
 import { Tags } from '../tag/schema/tag.schema';
 import { Lists } from '../list/schema/list.schema';
 import { CreateTask } from './interface/create-task.interface';
-import { GetTask } from './interface/get-task.interface';
+import { GetTaskDto } from './dto/get-task.dto';
 
 @Injectable()
 export class TaskService {
@@ -41,7 +42,7 @@ export class TaskService {
         const newTask = new Task();
         newTask.title = createTaskDto.title;
         newTask.description = createTaskDto.description;
-        newTask.due_date = createTaskDto.due_date;
+        newTask.due_date = new Date(`${createTaskDto.due_date}T00:00:00.000Z`);
         newTask.user_id = user_id;
         newTask.tag_ids = createTaskDto.tag_ids.map((id: string) => new mongoose.Types.ObjectId(id));
         newTask.list_id = new mongoose.Types.ObjectId(createTaskDto.list_id);
@@ -50,9 +51,56 @@ export class TaskService {
         return { success: true, message: "Task created successfully." };
     }
 
-    async findAll(@CurrentUser() user: CurrentUserType): Promise<{ success: boolean, message: string, data: Task[] }> {
+    async findAll(@CurrentUser() user: CurrentUserType, getTaskDto: GetTaskDto): Promise<{ success: boolean, message: string, data: Task[] }> {
         const userId = new mongoose.Types.ObjectId(user.id)
-        const tasks = await this.taskModel.find({ user_id: userId, isDeleted: false }).populate(["tag_ids","list_id"])
+
+        const tasks = await this.taskModel.aggregate([
+            {
+                $match: {
+                    user_id: userId,
+                    isDeleted: false,
+                    due_date: {
+                        $gte: new Date(getTaskDto.start_date),
+                        $lt: new Date(getTaskDto.end_date)
+                    }
+                },
+            },
+            {
+                $lookup: {
+                    from: "tags",
+                    localField: "tag_ids",
+                    foreignField: "_id",
+                    pipeline: [
+                        {
+                            $match: {
+                                isDeleted: false
+                            }
+                        }
+                    ],
+                    as: "tags",
+                }
+            },
+            {
+                $lookup: {
+                    from: "lists",
+                    localField: "list_id",
+                    foreignField: "_id",
+                    pipeline: [
+                        {
+                            $match: {
+                                isDeleted: false
+                            }
+                        }
+                    ],
+                    as: "list"
+                },
+            },
+            {
+                $set: {
+                    list: { $ifNull: [{ $arrayElemAt: ["$list", 0] }, null] }
+                }
+            },
+        ])
         return { success: true, message: "Tasks fetched successfully.", data: tasks };
     }
 
