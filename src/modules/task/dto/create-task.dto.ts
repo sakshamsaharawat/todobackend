@@ -6,12 +6,14 @@ import {
   IsDateString,
   IsMongoId,
   IsNotEmpty,
+  IsOptional,
   IsString,
   Matches,
 } from 'class-validator';
 import { Types } from 'mongoose';
 
 export class CreateTaskDto {
+
 
   @IsNotEmpty({ message: 'Title is required.' })
   @IsString({ message: 'Title must be a string.' })
@@ -30,15 +32,15 @@ export class CreateTaskDto {
   // @IsDateString({}, { message: 'Date must be a valid ISO 8601 date string.' })
   due_date: string;
 
-  @IsNotEmpty({ message: 'tagIds are required.' })
+  @IsOptional()
   @IsArray({ message: 'tagIds must be an array.' })
-  @ArrayNotEmpty({ message: 'At least one tagIds is required.' })
-  @IsMongoId({ each: true, message: 'Each tagIds must be a valid MongoDB ObjectId.' })
-  @Transform(({ value }) => value.map((id: string) => id.trim())) 
-  tag_ids: string[]; 
-
-  @IsNotEmpty({ message: 'List ID is required.' })
+  @IsMongoId({ each: true, message: 'Each tagId must be a valid MongoDB ObjectId.' })
+  @Transform(({ value }) => (Array.isArray(value) ? value.map((id: string) => id.trim()) : value))
+  tag_ids?: string[];
+  
+  @IsOptional()
   @IsMongoId({ message: 'List ID must be a valid MongoDB ObjectId.' })
-  @Transform(({ value }) => value.trim()) 
-  list_id: string;  
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
+  list_id?: string;
+  
 }

@@ -17,10 +17,10 @@ export class Task {
   @Prop({ required: true })
   due_date: Date;
 
-  @Prop({ type: [MongooseSchema.ObjectId], ref: "Tags", required: true })
+  @Prop({ type: [MongooseSchema.ObjectId], ref: "Tags" })
   tag_ids: Types.ObjectId[];
 
-  @Prop({ type: MongooseSchema.ObjectId, ref: "Lists", required: true })
+  @Prop({ type: MongooseSchema.ObjectId, ref: "Lists" })
   list_id: Types.ObjectId;
 
   @Prop({ default: false })

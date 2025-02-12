@@ -25,18 +25,33 @@ export class TaskService {
     async create(createTaskDto: CreateTaskDto, user: CurrentUserType): Promise<CreateTask> {
         const user_id = new mongoose.Types.ObjectId(user.id);
 
-        const uniqueTagIds = [...new Set(createTaskDto.tag_ids)];
-        if (uniqueTagIds.length !== createTaskDto.tag_ids.length) {
-            throw new BadRequestException("Duplicate tag IDs are not allowed.");
+        if (createTaskDto?.tag_ids?.length) {
+            const uniqueTagIds = [...new Set(createTaskDto.tag_ids)];
+            if (uniqueTagIds.length !== createTaskDto.tag_ids.length) {
+                throw new BadRequestException("Duplicate tag IDs are not allowed.");
+            }
+
+            const existingTags = await this.tagModel.find({
+                _id: { $in: createTaskDto.tag_ids },
+                user_id,
+                isDeleted: false
+            });
+
+            if (existingTags.length !== createTaskDto.tag_ids.length) {
+                throw new BadRequestException("Tag IDs are invalid or do not belong to the user.");
+            }
         }
-        const existingTags = await this.tagModel.find({ _id: { $in: createTaskDto.tag_ids }, user_id, isDeleted: false });
-        if (existingTags.length !== createTaskDto.tag_ids.length) {
-            throw new BadRequestException("Tag IDs are invalid or not exist to the user.");
-        }
-        const existingList = await this.ListModel.findOne({ _id: createTaskDto.list_id, user_id, isDeleted: false });
-        console.log("existingList", existingList)
-        if (!existingList) {
-            throw new BadRequestException("List does not exist or does not belong to the user.");
+
+        if (createTaskDto.list_id) {
+            const existingList = await this.ListModel.findOne({
+                _id: createTaskDto.list_id,
+                user_id,
+                isDeleted: false
+            });
+
+            if (!existingList) {
+                throw new BadRequestException("List does not exist or does not belong to the user.");
+            }
         }
 
         const newTask = new Task();
@@ -44,12 +59,13 @@ export class TaskService {
         newTask.description = createTaskDto.description;
         newTask.due_date = new Date(`${createTaskDto.due_date}T00:00:00.000Z`);
         newTask.user_id = user_id;
-        newTask.tag_ids = createTaskDto.tag_ids.map((id: string) => new mongoose.Types.ObjectId(id));
+        newTask.tag_ids = createTaskDto?.tag_ids?.map((id: string) => new mongoose.Types.ObjectId(id)) || [];
         newTask.list_id = new mongoose.Types.ObjectId(createTaskDto.list_id);
 
-        await this.taskModel.create(newTask)
+        await this.taskModel.create(newTask);
         return { success: true, message: "Task created successfully." };
     }
+
 
     async findAll(@CurrentUser() user: CurrentUserType, getTaskDto: GetTaskDto): Promise<{ success: boolean, message: string, data: Task[] }> {
         const userId = new mongoose.Types.ObjectId(user.id)
