@@ -7,7 +7,7 @@ import { UserModule } from './modules/user/user.module';
 import { TagModule } from './modules/tag/tag.module';
 import { ListModule } from './modules/list/list.module';
 import { TaskModule } from './modules/task/task.module';
-
+import { StickywallModule } from './modules/stickywall/stickywall.module';
 
 @Module({
   imports: [
@@ -25,6 +25,7 @@ import { TaskModule } from './modules/task/task.module';
     TagModule,
     ListModule,
     TaskModule,
+    StickywallModule
   ],
   controllers: [AppController],
   providers: [AppService],

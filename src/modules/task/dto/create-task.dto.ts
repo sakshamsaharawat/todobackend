@@ -23,8 +23,10 @@ export class CreateTaskDto {
 
   @IsNotEmpty({ message: 'Description is required.' })
   @IsString({ message: 'Description must be a string.' })
-  @Transform(({ value }) => (typeof value === "string" ? value.trim() : value))
-  @Matches(/^(?!.*\s{2,})[A-Za-z0-9]+(?:\s[A-Za-z0-9]+)*$/, { message: 'Description cannot have consecutive spaces.' })
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
+  @Matches(/^(?!.*\s{2,})[\w\s,.'!?-]+$/, {
+    message: 'Description cannot have consecutive spaces.',
+  })
   description: string;
 
   @IsNotEmpty({ message: 'Date is required.' })
@@ -37,10 +39,10 @@ export class CreateTaskDto {
   @IsMongoId({ each: true, message: 'Each tagId must be a valid MongoDB ObjectId.' })
   @Transform(({ value }) => (Array.isArray(value) ? value.map((id: string) => id.trim()) : value))
   tag_ids?: string[];
-  
+
   @IsOptional()
   @IsMongoId({ message: 'List ID must be a valid MongoDB ObjectId.' })
   @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   list_id?: string;
-  
+
 }

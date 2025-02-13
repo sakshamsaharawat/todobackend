@@ -1,8 +1,14 @@
+import { Type } from '@nestjs/common';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Types, Schema as MongooseSchema } from 'mongoose';
 export type StickyWallDocument = StickyWall & Document;
 
+export type ListsDocument = StickyWall & Document;
 @Schema({ timestamps: true })
 export class StickyWall {
+
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true } )
+  user_id: Types.ObjectId
   @Prop({ required: true })
   title: string;
 
@@ -10,6 +16,9 @@ export class StickyWall {
   color_code: string;
 
   @Prop({ required: true })
-  content: string;
+  description: string;
+
+  @Prop({ default: false })
+  isDeleted: boolean;
 }
 export const StickyWallSchema = SchemaFactory.createForClass(StickyWall);
