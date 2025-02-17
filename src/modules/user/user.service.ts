@@ -6,10 +6,12 @@ import { UpdateUserDto } from './dto/update.user.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schema/user.schema';
 import { JwtService } from '@nestjs/jwt';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { BooleanMessage } from './interface/boolean-message.interface';
 import * as bcrypt from 'bcrypt';
 import { LoginUser } from './interface/login-user.interface';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { CurrentUserType } from './interface/current-user.interface';
 
 @Injectable()
 export class UserService {
@@ -20,7 +22,7 @@ export class UserService {
     private readonly configService: ConfigService
   ) { }
   // The function is declared as async, meaning it will handle asynchronous operations (like database queries or password hashing).
-  async create(createUserDto: CreateUserDto): Promise<BooleanMessage> {
+  async create(createUserDto: CreateUserDto): Promise<{ success: boolean, message: string, token: string,data: User }> {
     const isEmailExist = await this.userModel.findOne({ email: createUserDto.email.toLowerCase() })
     if (isEmailExist) {
       throw new BadRequestException("Email already exist.")
@@ -30,8 +32,10 @@ export class UserService {
     newUser.last_name = createUserDto.last_name;
     newUser.email = createUserDto.email.toLowerCase();
     newUser.password = await bcrypt.hash(createUserDto.password, 10)
-    await this.userModel.create(newUser)
-    return { success: true, message: "User created successfully" }
+    const result = await this.userModel.create(newUser)
+    const token = this.jwtService.sign({ id: result._id, email: result.email })
+    console.log("token--------", token)
+    return { success: true, message: "User created successfully", token , data: result}
   }
 
   async login(loginUserDto: LoginUserDto): Promise<LoginUser> {

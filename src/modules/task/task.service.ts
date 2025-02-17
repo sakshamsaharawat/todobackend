@@ -66,10 +66,10 @@ export class TaskService {
         return { success: true, message: "Task created successfully." };
     }
 
-
     async findAll(@CurrentUser() user: CurrentUserType, getTaskDto: GetTaskDto): Promise<{ success: boolean, message: string, data: Task[] }> {
         const userId = new mongoose.Types.ObjectId(user.id)
 
+        console.log("userId", userId)
         const tasks = await this.taskModel.aggregate([
             {
                 $match: {
@@ -117,6 +117,7 @@ export class TaskService {
                 }
             },
         ])
+        console.log("tasks-------", tasks)
         return { success: true, message: "Tasks fetched successfully.", data: tasks };
     }
 

@@ -1,3 +1,4 @@
+import { CurrentUserType } from './interface/current-user.interface';
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, ForbiddenException, UsePipes } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -17,7 +18,7 @@ export class UserController {
 
   @Post("signup")
   @UsePipes(new TrimPipe())
-  create(@Body() createUserDto: CreateUserDto): Promise<BooleanMessage> {
+  create(@Body() createUserDto: CreateUserDto): Promise<{ success: boolean, message: string, token: string }> {
     return this.userService.create(createUserDto);
   }
 
