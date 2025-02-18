@@ -1,19 +1,14 @@
-import { Type } from '@nestjs/common';
 import { Transform } from 'class-transformer';
 import {
-  ArrayNotEmpty,
   IsArray,
-  IsDateString,
   IsMongoId,
   IsNotEmpty,
   IsOptional,
   IsString,
   Matches,
 } from 'class-validator';
-import { Types } from 'mongoose';
 
 export class CreateTaskDto {
-
 
   @IsNotEmpty({ message: 'Title is required.' })
   @IsString({ message: 'Title must be a string.' })

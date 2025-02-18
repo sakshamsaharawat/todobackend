@@ -7,6 +7,9 @@ import { CurrentUserType } from '../user/interface/current-user.interface';
 import { CreateTask } from './interface/create-task.interface';
 import { GetTask } from './interface/get-task.interface';
 import { GetTaskDto } from './dto/get-task.dto';
+import { UpdateTaskDto } from './dto/update-task.dto';
+import { Task } from './schemas/task.schema';
+import { DeleteTaskDto } from './dto/delete-task.dto';
 
 @Controller('task')
 export class TaskController {
@@ -30,15 +33,15 @@ export class TaskController {
         return this.TaskService.findOne();
     }
 
-    @Patch()
-
-    update() {
-        return this.TaskService.update();
+    @Post("update")
+    @UseGuards(JwtAuthGuard)
+    update(@Body() updateTaskDto: UpdateTaskDto, @CurrentUser() user: CurrentUserType): Promise<{ success: boolean, message: string, data: Task }> {
+        return this.TaskService.update(updateTaskDto, user);
     }
 
-    @Delete(':id')
-
-    remove() {
-        return this.TaskService.remove();
+    @Delete(":id")
+    @UseGuards(JwtAuthGuard)
+    remove(@Param() deleteTaskDto: DeleteTaskDto, @CurrentUser() user: CurrentUserType) {
+        return this.TaskService.remove(deleteTaskDto, user);
     }
 }

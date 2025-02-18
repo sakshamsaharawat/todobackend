@@ -1,6 +1,6 @@
 import { GetTask } from './interface/get-task.interface';
 import { CurrentUser } from './../../common/decorators/current-user.decorator';
-import { BadRequestException, Injectable, Type } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, Type } from '@nestjs/common';
 import { Task } from './schemas/task.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
@@ -10,6 +10,11 @@ import { Tags } from '../tag/schema/tag.schema';
 import { Lists } from '../list/schema/list.schema';
 import { CreateTask } from './interface/create-task.interface';
 import { GetTaskDto } from './dto/get-task.dto';
+import { UpdateTaskDto } from './dto/update-task.dto';
+import { throwError } from 'rxjs';
+import { DeleteTaskDto } from './dto/delete-task.dto';
+import { BlockList } from 'net';
+import { BlobOptions } from 'buffer';
 
 @Injectable()
 export class TaskService {
@@ -117,7 +122,6 @@ export class TaskService {
                 }
             },
         ])
-        console.log("tasks-------", tasks)
         return { success: true, message: "Tasks fetched successfully.", data: tasks };
     }
 
@@ -126,11 +130,65 @@ export class TaskService {
         return { success: true, message: "Task fetched successfully.", data: Task };
     }
 
-    async update() {
-        return { success: true, message: "Task Updated successfully.", };
+    async update(updateTaskDto: UpdateTaskDto, user: CurrentUserType): Promise<{ success: boolean, message: string, data: Task }> {
+        const userId = new mongoose.Types.ObjectId(user.id);
+        const updatedTask = await this.taskModel.findByIdAndUpdate(updateTaskDto.id, updateTaskDto, { new: true })
+        const task = await this.taskModel.aggregate([
+            {
+                $match: {
+                    _id: updatedTask._id,
+                    user_id: userId,
+                    isDeleted: false
+                },
+            },
+            {
+                $lookup: {
+                    from: "tags",
+                    localField: "tag_ids",
+                    foreignField: "_id",
+                    pipeline: [
+                        {
+                            $match: {
+                                isDeleted: false
+                            }
+                        }
+                    ],
+                    as: "tags",
+                }
+            },
+            {
+                $lookup: {
+                    from: "lists",
+                    localField: "list_id",
+                    foreignField: "_id",
+                    pipeline: [
+                        {
+                            $match: {
+                                isDeleted: false
+                            }
+                        }
+                    ],
+                    as: "list"
+                },
+            },
+            {
+                $set: {
+                    list: { $ifNull: [{ $arrayElemAt: ["$list", 0] }, null] }
+                }
+            }
+        ]);
+
+        return { success: true, message: "Task Updated successfully.", data: task[0] };
     }
 
-    async remove() {
+    async remove(deleteTaskDto: DeleteTaskDto, user: CurrentUserType): Promise<{ success: boolean, message: string }> {
+        const userId = new mongoose.Types.ObjectId(user.id);
+        const task = await this.taskModel.findOne({ _id: deleteTaskDto.id, user_id: userId, isDeleted: false })
+        console.log(task)
+        if (!task) {
+            throw new NotFoundException("Task not found.")
+        }
+        const deletedTask = await this.taskModel.findByIdAndUpdate(deleteTaskDto.id, { isDeleted: true })
         return { success: true, message: "Task Deleted successfully." };
     }
 }
