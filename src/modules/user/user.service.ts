@@ -7,10 +7,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schema/user.schema';
 import { JwtService } from '@nestjs/jwt';
 import mongoose, { Model } from 'mongoose';
-import { BooleanMessage } from './interface/boolean-message.interface';
 import * as bcrypt from 'bcrypt';
 import { LoginUser } from './interface/login-user.interface';
-import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { CurrentUserType } from './interface/current-user.interface';
 
 @Injectable()
@@ -22,7 +20,7 @@ export class UserService {
     private readonly configService: ConfigService
   ) { }
   // The function is declared as async, meaning it will handle asynchronous operations (like database queries or password hashing).
-  async create(createUserDto: CreateUserDto): Promise<{ success: boolean, message: string, token: string,data: User }> {
+  async create(createUserDto: CreateUserDto): Promise<{ success: boolean, message: string, token: string, data: User }> {
     const isEmailExist = await this.userModel.findOne({ email: createUserDto.email.toLowerCase() })
     if (isEmailExist) {
       throw new BadRequestException("Email already exist.")
@@ -34,8 +32,7 @@ export class UserService {
     newUser.password = await bcrypt.hash(createUserDto.password, 10)
     const result = await this.userModel.create(newUser)
     const token = this.jwtService.sign({ id: result._id, email: result.email })
-    console.log("token--------", token)
-    return { success: true, message: "User created successfully", token , data: result}
+    return { success: true, message: "User created successfully", token, data: result }
   }
 
   async login(loginUserDto: LoginUserDto): Promise<LoginUser> {
@@ -64,8 +61,15 @@ export class UserService {
     return user;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(updateUserDto: UpdateUserDto, user: CurrentUserType): Promise<{ success: boolean, message: string, data: User }> {
+    const userId = new mongoose.Types.ObjectId(user.id)
+    const isUserExist = await this.userModel.findOne({ _id: userId, isDeleted: false })
+    if (!isUserExist) {
+      throw new NotFoundException("User not found.")
+    }
+    const updatedUser = await this.userModel.findByIdAndUpdate(updateUserDto.id, updateUserDto, { new: true })
+
+    return { success: true, message: "User updated successfully.", data: updatedUser }
   }
 
   remove(id: number) {

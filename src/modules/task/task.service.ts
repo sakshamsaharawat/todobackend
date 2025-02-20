@@ -74,7 +74,6 @@ export class TaskService {
     async findAll(@CurrentUser() user: CurrentUserType, getTaskDto: GetTaskDto): Promise<{ success: boolean, message: string, data: Task[] }> {
         const userId = new mongoose.Types.ObjectId(user.id)
 
-        console.log("userId", userId)
         const tasks = await this.taskModel.aggregate([
             {
                 $match: {
@@ -184,11 +183,10 @@ export class TaskService {
     async remove(deleteTaskDto: DeleteTaskDto, user: CurrentUserType): Promise<{ success: boolean, message: string }> {
         const userId = new mongoose.Types.ObjectId(user.id);
         const task = await this.taskModel.findOne({ _id: deleteTaskDto.id, user_id: userId, isDeleted: false })
-        console.log(task)
         if (!task) {
             throw new NotFoundException("Task not found.")
         }
-        const deletedTask = await this.taskModel.findByIdAndUpdate(deleteTaskDto.id, { isDeleted: true })
+        await this.taskModel.findByIdAndUpdate(deleteTaskDto.id, { isDeleted: true })
         return { success: true, message: "Task Deleted successfully." };
     }
 }

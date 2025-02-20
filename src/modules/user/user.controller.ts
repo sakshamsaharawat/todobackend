@@ -43,9 +43,10 @@ export class UserController {
     return this.userService.findOne(_id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto);
+  @Post("update")
+  @UseGuards(JwtAuthGuard)
+  update(@Body() updateUserDto: UpdateUserDto, @CurrentUser() user: CurrentUserType) {
+    return this.userService.update(updateUserDto, user);
   }
 
   @Delete(':id')
