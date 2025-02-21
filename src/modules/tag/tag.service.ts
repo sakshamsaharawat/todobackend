@@ -17,18 +17,17 @@ export class TagService {
         private readonly tagModel: Model<Tags>,
     ) { }
 
-    async create(createTagDto: CreateTagDto, user: CurrentUserType): Promise<BooleanMessage> {
+    async create(createTagDto: CreateTagDto, user: CurrentUserType): Promise<{ success: boolean, message: string, data: Tags }> {
         const isTitleExist = await this.tagModel.findOne({ title: { $regex: new RegExp(`^${createTagDto.title}$`, "i") }, user_id: user.id });
         if (isTitleExist) {
             throw new BadRequestException("Tag already exist.");
         }
-
-        const newTag = new Tags()
+        const newTag = new Tags();
         newTag.title = createTagDto.title;
         newTag.color_code = createTagDto.color_code;
         newTag.user_id = new mongoose.Types.ObjectId(user.id);
-        await this.tagModel.create(newTag);
-        return { success: true, message: "Tag created successfully." };
+        const tag = await this.tagModel.create(newTag);
+        return { success: true, message: "Tag created successfully.", data: tag };
     }
 
     async findAll(user: CurrentUserType): Promise<{ success: boolean, message: string, data: Tags[] }> {
@@ -43,7 +42,6 @@ export class TagService {
         if (!tag) {
             throw new NotFoundException("Tag not found.");
         }
-
         return { success: true, message: "Tag fetched successfully.", data: tag };
     }
 

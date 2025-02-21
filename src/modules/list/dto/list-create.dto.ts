@@ -1,6 +1,5 @@
 import { Transform } from 'class-transformer';
-import { IsNotEmpty, IsString, Matches, MinLength, ValidateIf } from 'class-validator';
-
+import { IsNotEmpty, IsString, Matches, MinLength } from 'class-validator';
 
 export class CreateListDto {
   @IsNotEmpty({ message: "Title is required." })

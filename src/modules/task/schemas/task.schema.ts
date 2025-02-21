@@ -20,11 +20,10 @@ export class Task {
   @Prop({ type: [MongooseSchema.ObjectId], ref: "Tags" })
   tag_ids: Types.ObjectId[];
 
-  @Prop({ type: MongooseSchema.ObjectId, ref: "Lists", default: null,  required: false })
+  @Prop({ type: MongooseSchema.ObjectId, ref: "Lists", default: null, required: false })
   list_id: Types.ObjectId;
 
   @Prop({ default: false })
   isDeleted: boolean;
 }
-
 export const TaskSchema = SchemaFactory.createForClass(Task);

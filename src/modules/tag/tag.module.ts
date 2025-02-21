@@ -9,9 +9,9 @@ import { UserModule } from '../user/user.module';
 @Module({
     imports: [
         MongooseModule.forFeature([{ name: 'Tags', schema: TagsSchema }]),
-        UserModule, 
+        UserModule
     ],
     controllers: [TagController],
-    providers: [TagService, JwtAuthGuard],
+    providers: [TagService, JwtAuthGuard]
 })
 export class TagModule { }

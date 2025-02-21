@@ -19,57 +19,52 @@ export class UserService {
     private jwtService: JwtService,
     private readonly configService: ConfigService
   ) { }
-  // The function is declared as async, meaning it will handle asynchronous operations (like database queries or password hashing).
   async create(createUserDto: CreateUserDto): Promise<{ success: boolean, message: string, token: string, data: User }> {
-    const isEmailExist = await this.userModel.findOne({ email: createUserDto.email.toLowerCase() })
+    const isEmailExist = await this.userModel.findOne({ email: createUserDto.email.toLowerCase() });
     if (isEmailExist) {
-      throw new BadRequestException("Email already exist.")
+      throw new BadRequestException("Email already exist.");
     }
     const newUser = new User()
     newUser.first_name = createUserDto.first_name;
     newUser.last_name = createUserDto.last_name;
     newUser.email = createUserDto.email.toLowerCase();
-    newUser.password = await bcrypt.hash(createUserDto.password, 10)
-    const result = await this.userModel.create(newUser)
-    const token = this.jwtService.sign({ id: result._id, email: result.email })
-    return { success: true, message: "User created successfully", token, data: result }
+    newUser.password = await bcrypt.hash(createUserDto.password, 10);
+    const result = await this.userModel.create(newUser);
+    const token = this.jwtService.sign({ id: result._id, email: result.email });
+    return { success: true, message: "User created successfully", token, data: result };
   }
 
   async login(loginUserDto: LoginUserDto): Promise<LoginUser> {
     const { email, password } = loginUserDto;
     const user = await (this.userModel.findOne({ email: email.toLowerCase() })).select('+password');
     if (!user) {
-      throw new BadRequestException("User not found.")
+      throw new BadRequestException("User not found.");
     }
     const isPasswordMatched = await bcrypt.compare(password, user.password);
     if (!isPasswordMatched) {
-      throw new UnauthorizedException("Invalid credentials.")
+      throw new UnauthorizedException("Invalid credentials.");
     }
-    const token = this.jwtService.sign({ id: user._id, email: user.email })
-    return { success: true, message: "User login successfully.", token }
+    const token = this.jwtService.sign({ id: user._id, email: user.email });
+    return { success: true, message: "User login successfully.", token };
   }
 
-  findAll() {
-    return `This action returns all user`;
-  }
-
-  async findOne(_id: string) {
-    const user = await this.userModel.findById({ _id }).select('+password')
-    if (!user) {
-      throw new NotFoundException("User not found.")
+  async findOne(user: CurrentUserType): Promise<{ success: boolean, message: string, data: User }> {
+    const isUserExist = await this.userModel.findById(user.id).select('+password');
+    if (!isUserExist) {
+      throw new NotFoundException("User not found.");
     }
-    return user;
+    return { success: true, message: "User fetched successfuly.", data: isUserExist };
   }
 
   async update(updateUserDto: UpdateUserDto, user: CurrentUserType): Promise<{ success: boolean, message: string, data: User }> {
-    const userId = new mongoose.Types.ObjectId(user.id)
-    const isUserExist = await this.userModel.findOne({ _id: userId, isDeleted: false })
+    const userId = new mongoose.Types.ObjectId(user.id);
+    const isUserExist = await this.userModel.findOne({ _id: userId, isDeleted: false });
     if (!isUserExist) {
-      throw new NotFoundException("User not found.")
+      throw new NotFoundException("User not found.");
     }
-    const updatedUser = await this.userModel.findByIdAndUpdate(updateUserDto.id, updateUserDto, { new: true })
+    const updatedUser = await this.userModel.findByIdAndUpdate(user.id, updateUserDto, { new: true });
 
-    return { success: true, message: "User updated successfully.", data: updatedUser }
+    return { success: true, message: "User updated successfully.", data: updatedUser };
   }
 
   remove(id: number) {

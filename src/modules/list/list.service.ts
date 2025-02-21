@@ -13,8 +13,8 @@ import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 @Injectable()
 export class ListService {
     constructor(
-        @InjectModel('Lists')
-        private readonly ListModel: Model<Lists>,
+        @InjectModel(Lists.name)
+        private readonly ListModel: Model<Lists>
     ) { }
 
     async create(createListDto: CreateListDto, user: CurrentUserType): Promise<{ success: boolean, message: string, data: Lists }> {
@@ -23,7 +23,7 @@ export class ListService {
             throw new BadRequestException("List already exist.");
         }
 
-        const newList = new Lists()
+        const newList = new Lists();
         newList.title = createListDto.title;
         newList.color_code = createListDto.color_code;
         newList.user_id = new mongoose.Types.ObjectId(user.id);
@@ -35,7 +35,7 @@ export class ListService {
         const userId = new mongoose.Types.ObjectId(user.id);
         const lists = await this.ListModel.find({ user_id: userId, isDeleted: false });
 
-        return { success: true, message: Lists.length ? "Lists fetched successfully." : "No list found", data: lists };
+        return { success: true, message: lists.length ? "Lists fetched successfully." : "No list found.", data: lists };
     }
 
     async findOne(ListGetDto: ListGetDto, user: CurrentUserType): Promise<{ success: boolean, message: string, data: Lists }> {

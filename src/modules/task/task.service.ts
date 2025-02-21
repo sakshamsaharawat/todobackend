@@ -1,6 +1,5 @@
-import { GetTask } from './interface/get-task.interface';
 import { CurrentUser } from './../../common/decorators/current-user.decorator';
-import { BadRequestException, Injectable, NotFoundException, Type } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { Task } from './schemas/task.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
@@ -11,10 +10,7 @@ import { Lists } from '../list/schema/list.schema';
 import { CreateTask } from './interface/create-task.interface';
 import { GetTaskDto } from './dto/get-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
-import { throwError } from 'rxjs';
 import { DeleteTaskDto } from './dto/delete-task.dto';
-import { BlockList } from 'net';
-import { BlobOptions } from 'buffer';
 
 @Injectable()
 export class TaskService {
@@ -67,8 +63,8 @@ export class TaskService {
         newTask.tag_ids = createTaskDto?.tag_ids?.map((id: string) => new mongoose.Types.ObjectId(id)) || [];
         newTask.list_id = new mongoose.Types.ObjectId(createTaskDto.list_id);
 
-        await this.taskModel.create(newTask);
-        return { success: true, message: "Task created successfully." };
+        const task = await this.taskModel.create(newTask);
+        return { success: true, message: "Task created successfully.", data: task };
     }
 
     async findAll(@CurrentUser() user: CurrentUserType, getTaskDto: GetTaskDto): Promise<{ success: boolean, message: string, data: Task[] }> {
@@ -124,14 +120,9 @@ export class TaskService {
         return { success: true, message: "Tasks fetched successfully.", data: tasks };
     }
 
-    async findOne() {
-
-        return { success: true, message: "Task fetched successfully.", data: Task };
-    }
-
     async update(updateTaskDto: UpdateTaskDto, user: CurrentUserType): Promise<{ success: boolean, message: string, data: Task }> {
         const userId = new mongoose.Types.ObjectId(user.id);
-        const updatedTask = await this.taskModel.findByIdAndUpdate(updateTaskDto.id, updateTaskDto, { new: true })
+        const updatedTask = await this.taskModel.findByIdAndUpdate(updateTaskDto.id, updateTaskDto, { new: true });
         const task = await this.taskModel.aggregate([
             {
                 $match: {
@@ -182,11 +173,11 @@ export class TaskService {
 
     async remove(deleteTaskDto: DeleteTaskDto, user: CurrentUserType): Promise<{ success: boolean, message: string }> {
         const userId = new mongoose.Types.ObjectId(user.id);
-        const task = await this.taskModel.findOne({ _id: deleteTaskDto.id, user_id: userId, isDeleted: false })
+        const task = await this.taskModel.findOne({ _id: deleteTaskDto.id, user_id: userId, isDeleted: false });
         if (!task) {
-            throw new NotFoundException("Task not found.")
+            throw new NotFoundException("Task not found.");
         }
-        await this.taskModel.findByIdAndUpdate(deleteTaskDto.id, { isDeleted: true })
-        return { success: true, message: "Task Deleted successfully." };
+        await this.taskModel.findByIdAndUpdate(deleteTaskDto.id, { isDeleted: true });
+        return { success: true, message: "Task Deleted successfully." }
     }
 }

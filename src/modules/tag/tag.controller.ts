@@ -16,7 +16,7 @@ export class TagController {
 
     @Post("create")
     @UseGuards(JwtAuthGuard)
-    create(@Body() createTagDto: CreateTagDto, @CurrentUser() user: CurrentUserType): Promise<BooleanMessage> {
+    create(@Body() createTagDto: CreateTagDto, @CurrentUser() user: CurrentUserType): Promise<{ success: boolean, message: string, data: Tags }> {
         return this.TagService.create(createTagDto, user);
     }
 

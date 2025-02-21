@@ -2,19 +2,15 @@ import { Transform } from 'class-transformer';
 import {
   IsEmail,
   IsIn,
-  IsMongoId,
   IsNotEmpty,
   IsOptional,
   IsString,
+  IsUrl,
   Matches,
   MaxLength,
 } from 'class-validator';
 
 export class UpdateUserDto {
-  @IsNotEmpty({ message: 'List ID is required.' })
-  @IsMongoId({ message: 'Invalid List ID.' })
-  id: string;
-
   @IsString({ message: 'First name must be a string.' })
   @IsNotEmpty({ message: 'First name is required.' })
   @Transform(({ value }) => (typeof value === "string" ? value.trim() : value))
@@ -57,19 +53,28 @@ export class UpdateUserDto {
   @IsOptional()
   @IsString({ message: 'City must be a string.' })
   @MaxLength(85, { message: 'City name is too long (max 85 characters).' })
+  @Transform(({ value }) => (typeof value === "string" ? value.trim() : value))
+  @Matches(/^[A-Za-z]+$/, { message: 'City cannot have consecutive spaces.' })
   city: string;
 
   @IsOptional()
   @Matches(/^\d{4}-\d{2}-\d{2}$/, {
     message: 'Date of birth must be in YYYY-MM-DD format.',
   })
-
   dob: string;
 
   @IsOptional()
   @IsString({ message: 'Address must be a string.' })
   @MaxLength(255, { message: 'Address is too long (max 255 characters).' })
   @Transform(({ value }) => (typeof value === "string" ? value.trim() : value))
+  @Matches(/^(?!.*\s{2,})[\w\s,.'!?-]+$/, {
+    message: 'Address cannot have consecutive spaces.',
+  })
   address: string;
-}
 
+  @IsOptional()
+  @IsString({ message: 'Image URL must be a string.' })
+  @MaxLength(300, { message: 'Image URL is too long (max 255 characters).' })
+  @IsUrl({}, { message: 'Invalid image URL format.' })
+  image_url: string;
+}

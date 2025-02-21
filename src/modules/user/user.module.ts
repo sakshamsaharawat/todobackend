@@ -19,7 +19,6 @@ import { UserSchema } from './schema/user.schema';
           if (!secret || !expiresIn) {
             throw new Error('JWT configuration missing in application config');
           }
-
           return {
             secret,
             signOptions: { expiresIn },
@@ -29,11 +28,10 @@ import { UserSchema } from './schema/user.schema';
         }
       },
     }),
-
     MongooseModule.forFeature([{ name: 'User', schema: UserSchema }])
   ],
   controllers: [UserController],
   providers: [UserService,],
-  exports: [UserService, JwtModule],
+  exports: [UserService, JwtModule]
 })
 export class UserModule { }

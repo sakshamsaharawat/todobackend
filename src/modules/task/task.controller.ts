@@ -1,11 +1,10 @@
 import { CreateTaskDto } from './dto/create-task.dto';
 import { JwtAuthGuard } from 'src/middlewares/logger.middleware';
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Query, UseGuards } from "@nestjs/common";
 import { TaskService } from './task.service';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { CurrentUserType } from '../user/interface/current-user.interface';
 import { CreateTask } from './interface/create-task.interface';
-import { GetTask } from './interface/get-task.interface';
 import { GetTaskDto } from './dto/get-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { Task } from './schemas/task.schema';
@@ -23,14 +22,8 @@ export class TaskController {
 
     @Get()
     @UseGuards(JwtAuthGuard)
-    findAll(@Query() getTaskDto: GetTaskDto, @CurrentUser() user: CurrentUserType): Promise<GetTask> {
+    findAll(@Query() getTaskDto: GetTaskDto, @CurrentUser() user: CurrentUserType): Promise<{ success: boolean, message: string, data: Task[] }> {
         return this.TaskService.findAll(user, getTaskDto);
-    }
-
-    @Get('get-one')
-
-    findOne() {
-        return this.TaskService.findOne();
     }
 
     @Post("update")
@@ -41,7 +34,7 @@ export class TaskController {
 
     @Delete(":id")
     @UseGuards(JwtAuthGuard)
-    remove(@Param() deleteTaskDto: DeleteTaskDto, @CurrentUser() user: CurrentUserType) {
+    remove(@Param() deleteTaskDto: DeleteTaskDto, @CurrentUser() user: CurrentUserType): Promise<{ success: boolean, message: string }> {
         return this.TaskService.remove(deleteTaskDto, user);
     }
 }

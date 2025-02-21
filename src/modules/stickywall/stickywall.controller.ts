@@ -1,4 +1,3 @@
-import { FindAll } from './../tag/interface/find-all.interface';
 import { Body, Controller, Get, Post, UseGuards } from "@nestjs/common";
 import { StickywallService } from "./stickywall.service";
 import { CreateStickwallyDto } from "./dto/stickywall.dto";

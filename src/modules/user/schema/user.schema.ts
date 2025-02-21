@@ -49,9 +49,11 @@ export class User {
 
   @Prop({ required: false, trim: true, maxlength: 255 })
   address: string;
-  
+
+  @Prop({ required: false, trim: true, maxlength: 300 })
+  image_url: string
+
   @Prop({ default: false })
   isDeleted: boolean;
 }
 export const UserSchema = SchemaFactory.createForClass(User);
-

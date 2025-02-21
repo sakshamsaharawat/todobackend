@@ -1,16 +1,14 @@
 import { CurrentUserType } from './interface/current-user.interface';
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, ForbiddenException, UsePipes } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, UseGuards, UsePipes } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update.user.dto';
-import { BooleanMessage } from './interface/boolean-message.interface';
 import { LoginUserDto } from './dto/login-user.dto';
 import { LoginUser } from './interface/login-user.interface';
 import { JwtAuthGuard } from 'src/middlewares/logger.middleware';
-import { request } from 'express';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { TrimPipe } from 'src/pipes/trim.pipe';
-
+import { User } from './schema/user.schema';
 
 @Controller('user')
 export class UserController {
@@ -28,24 +26,15 @@ export class UserController {
     return this.userService.login(loginUserDto)
   }
 
-  @Get()
-  findAll() {
-    return this.userService.findAll();
-  }
-
-  @Get(':id')
+  @Get("profile")
   @UseGuards(JwtAuthGuard)
-  async findOne(@Param('id') _id: string, @CurrentUser() User: any) {
-    const tokenUserId = User.id;
-    if (tokenUserId !== _id) {
-      throw new ForbiddenException("You do not have permission to access this resource.");
-    }
-    return this.userService.findOne(_id);
+  async findOne(@CurrentUser() user: CurrentUserType) {
+    return this.userService.findOne(user);
   }
 
   @Post("update")
   @UseGuards(JwtAuthGuard)
-  update(@Body() updateUserDto: UpdateUserDto, @CurrentUser() user: CurrentUserType) {
+  update(@Body() updateUserDto: UpdateUserDto, @CurrentUser() user: CurrentUserType): Promise<{ success: boolean, message: string, data: User }> {
     return this.userService.update(updateUserDto, user);
   }
 

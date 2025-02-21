@@ -1,5 +1,4 @@
-import { IsArray, IsMongoId, IsNotEmpty, IsOptional, IsString, Matches } from "class-validator";
-import { CreateTaskDto } from "./create-task.dto";
+import { IsArray, IsDateString, IsMongoId, IsNotEmpty, IsOptional, IsString, Matches } from "class-validator";
 import { Transform } from "class-transformer";
 
 export class UpdateTaskDto {
@@ -25,8 +24,7 @@ export class UpdateTaskDto {
 
     @IsOptional()
     @IsNotEmpty({ message: 'Date is required.' })
-    // @Matches(/^\d{4}-\d{2}-\d{2}$/, { message: 'Date must be in YYYY-MM-DD format.' })
-    // @IsDateString({}, { message: 'Date must be a valid ISO 8601 date string.' })
+    @IsDateString({}, { message: 'Date must be a valid ISO 8601 date string.' })
     due_date: string;
 
     @IsOptional()

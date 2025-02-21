@@ -1,5 +1,4 @@
 import {
-  IsBoolean,
   IsEmail,
   IsNotEmpty,
   IsString,
@@ -11,7 +10,6 @@ export class CreateUserDto {
   @IsString({ message: 'First name is required.' })
   @IsNotEmpty({ message: 'First name must not be empty.' })
   @Matches(/^[a-zA-Z]+$/, { message: 'First name cannot contain numbers or special characters.' })
-  // @Matches(/^\S\S$/, { message: 'First name cannot have spaces before or after.' })
   first_name: string;
 
   @IsString({ message: 'Last name is required.' })

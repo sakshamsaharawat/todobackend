@@ -19,7 +19,7 @@ import { StickywallModule } from './modules/stickywall/stickywall.module';
       useFactory: async (configService: ConfigService) => ({
         uri: configService.get<string>('MONGO_URI'),
       }),
-      inject: [ConfigService],
+      inject: [ConfigService]
     }),
     UserModule,
     TagModule,
@@ -28,6 +28,6 @@ import { StickywallModule } from './modules/stickywall/stickywall.module';
     StickywallModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService]
 })
 export class AppModule { }
