@@ -1,9 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { CreateStickwallyDto } from './dto/stickywall.dto';
+import { CreateStickwallyDto } from '@stickywall/dto/stickywall.dto';
 import { CurrentUserType } from '../user/interface/current-user.interface';
 import mongoose, { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { StickyWall } from './schema/stickywall.schema';
+import { StickyWall } from '@stickywall/schema/stickywall.schema';
 
 @Injectable()
 export class StickywallService {

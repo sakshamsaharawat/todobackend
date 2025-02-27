@@ -1,16 +1,16 @@
 import { CurrentUser } from './../../common/decorators/current-user.decorator';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { Task } from './schemas/task.schema';
+import { Task } from '@task/schemas/task.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
-import { CreateTaskDto } from './dto/create-task.dto';
+import { CreateTaskDto } from '@task/dto/create-task.dto';
 import { CurrentUserType } from '../user/interface/current-user.interface';
-import { Tags } from '../tag/schema/tag.schema';
-import { Lists } from '../list/schema/list.schema';
+import { Tags } from '@tag/schema/tag.schema';
+import { Lists } from '@list/schema/list.schema';
 import { CreateTask } from './interface/create-task.interface';
-import { GetTaskDto } from './dto/get-task.dto';
-import { UpdateTaskDto } from './dto/update-task.dto';
-import { DeleteTaskDto } from './dto/delete-task.dto';
+import { GetTaskDto } from '@task/dto/get-task.dto';
+import { UpdateTaskDto } from '@task/dto/update-task.dto';
+import { DeleteTaskDto } from '@task/dto/delete-task.dto';
 
 @Injectable()
 export class TaskService {

@@ -1,13 +1,13 @@
-import { ListDeleteDto } from './dto/list-delete.dto';
+import { ListDeleteDto } from '@list/dto/list-delete.dto';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { CreateListDto } from './dto/list-create.dto';
-import { UpdateListDto } from './dto/list-update.dto';
+import { CreateListDto } from '@list/dto/list-create.dto';
+import { UpdateListDto } from '@list/dto/list-update.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { Lists } from './schema/list.schema';
+import { Lists } from '@list/schema/list.schema';
 import mongoose, { Model } from 'mongoose';
 import { BooleanMessage } from './interface/boolean-message.interface';
 import { CurrentUserType } from '../user/interface/current-user.interface';
-import { ListGetDto } from './dto/list-get-dto';
+import { ListGetDto } from '@list/dto/list-get-dto';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 
 @Injectable()

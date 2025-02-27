@@ -1,14 +1,14 @@
 import { CurrentUserType } from './interface/current-user.interface';
 import { Controller, Get, Post, Body, Param, Delete, UseGuards, UsePipes } from '@nestjs/common';
-import { UserService } from './user.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update.user.dto';
-import { LoginUserDto } from './dto/login-user.dto';
+import { UserService } from '@user/user.service';
+import { LoginUserDto } from '@user/dto/login-user.dto';
+import { CreateUserDto } from '@user/dto/create-user.dto';
+import { UpdateUserDto } from '@user/dto/update.user.dto';
 import { LoginUser } from './interface/login-user.interface';
 import { JwtAuthGuard } from 'src/middlewares/logger.middleware';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { TrimPipe } from 'src/pipes/trim.pipe';
-import { User } from './schema/user.schema';
+import { User } from '@user/schema/user.schema';
 
 @Controller('user')
 export class UserController {

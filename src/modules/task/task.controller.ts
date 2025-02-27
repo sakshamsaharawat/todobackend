@@ -1,14 +1,14 @@
-import { CreateTaskDto } from './dto/create-task.dto';
+import { CreateTaskDto } from '@task/dto/create-task.dto';
 import { JwtAuthGuard } from 'src/middlewares/logger.middleware';
 import { Body, Controller, Delete, Get, Param, Post, Query, UseGuards } from "@nestjs/common";
-import { TaskService } from './task.service';
+import { TaskService } from '@task/task.service';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { CurrentUserType } from '../user/interface/current-user.interface';
 import { CreateTask } from './interface/create-task.interface';
-import { GetTaskDto } from './dto/get-task.dto';
-import { UpdateTaskDto } from './dto/update-task.dto';
-import { Task } from './schemas/task.schema';
-import { DeleteTaskDto } from './dto/delete-task.dto';
+import { GetTaskDto } from '@task/dto/get-task.dto';
+import { UpdateTaskDto } from '@task/dto/update-task.dto';
+import { Task } from '@task/schemas/task.schema';
+import { DeleteTaskDto } from '@task/dto/delete-task.dto';
 
 @Controller('task')
 export class TaskController {

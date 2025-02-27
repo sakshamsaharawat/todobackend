@@ -1,10 +1,10 @@
 import { Body, Controller, Get, Post, UseGuards } from "@nestjs/common";
-import { StickywallService } from "./stickywall.service";
-import { CreateStickwallyDto } from "./dto/stickywall.dto";
+import { StickywallService } from "@stickywall/stickywall.service";
+import { CreateStickwallyDto } from "@stickywall/dto/stickywall.dto";
 import { CurrentUser } from "src/common/decorators/current-user.decorator";
 import { CurrentUserType } from "../user/interface/current-user.interface";
 import { JwtAuthGuard } from 'src/middlewares/logger.middleware';
-import { StickyWall } from './schema/stickywall.schema';
+import { StickyWall } from '@stickywall/schema/stickywall.schema';
 
 @Controller('stickywall')
 export class StickywallController {

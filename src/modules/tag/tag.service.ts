@@ -1,13 +1,13 @@
-import { TagDeleteDto } from './dto/tag-delete.dto';
+import { TagDeleteDto } from '@tag/dto/tag-delete.dto';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { CreateTagDto } from './dto/tag-create.dto';
-import { UpdateTagDto } from './dto/tag-update.dto';
+import { CreateTagDto } from '@tag/dto/tag-create.dto';
+import { UpdateTagDto } from '@tag/dto/tag-update.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { Tags } from './schema/tag.schema';
+import { Tags } from '@tag/schema/tag.schema';
 import mongoose, { Model } from 'mongoose';
 import { BooleanMessage } from './interface/boolean-message.interface';
 import { CurrentUserType } from '../user/interface/current-user.interface';
-import { TagGetDto } from './dto/tag-get-dto';
+import { TagGetDto } from '@tag/dto/tag-get-dto';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 
 @Injectable()

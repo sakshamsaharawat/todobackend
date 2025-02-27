@@ -1,14 +1,14 @@
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
-import { ListService } from "./list.service";
-import { CreateListDto } from "./dto/list-create.dto";
-import { UpdateListDto } from "./dto/list-update.dto";
+import { ListService } from "@list/list.service";
+import { CreateListDto } from "@list/dto/list-create.dto";
+import { UpdateListDto } from "@list/dto/list-update.dto";
 import { JwtAuthGuard } from "src/middlewares/logger.middleware";
 import { CurrentUserType } from "../user/interface/current-user.interface";
-import { ListGetDto } from './dto/list-get-dto';
-import { Lists } from './schema/list.schema';
+import { ListGetDto } from '@list/dto/list-get-dto';
+import { Lists } from '@list/schema/list.schema';
 import { BooleanMessage } from './interface/boolean-message.interface';
-import { ListDeleteDto } from './dto/list-delete.dto';
+import { ListDeleteDto } from '@list/dto/list-delete.dto';
 
 @Controller('list')
 export class ListController {

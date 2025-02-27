@@ -1,19 +1,19 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { JwtAuthGuard } from 'src/middlewares/logger.middleware';
-import { UserModule } from '../user/user.module';
-import { TaskController } from './task.controller';
-import { TaskService } from './task.service';
-import { TaskSchema } from './schemas/task.schema';
-import { TagsSchema } from '../tag/schema/tag.schema';
-import { ListsSchema } from '../list/schema/list.schema';
+import { UserModule } from '@user/user.module';
+import { TaskController } from '@task/task.controller';
+import { TaskService } from '@task/task.service';
+import { Task, TaskSchema } from '@task/schemas/task.schema';
+import { Tags, TagsSchema } from '@tag/schema/tag.schema';
+import { Lists, ListsSchema } from '@list/schema/list.schema';
 
 @Module({
     imports: [
         MongooseModule.forFeature([
-            { name: 'Task', schema: TaskSchema },
-            { name: 'Tags', schema: TagsSchema },
-            { name: 'Lists', schema: ListsSchema }
+            { name: Task.name, schema: TaskSchema },
+            { name: Tags.name, schema: TagsSchema },
+            { name: Lists.name, schema: ListsSchema }
         ]),
         UserModule,
     ],
