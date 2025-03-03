@@ -17,6 +17,7 @@ export class TaskController {
     @Post("create")
     @UseGuards(JwtAuthGuard)
     create(@Body() createTaskDto: CreateTaskDto, @CurrentUser() user: CurrentUserType): Promise<CreateTask> {
+        console.log("createTaskDto",createTaskDto)
         return this.TaskService.create(createTaskDto, user);
     }
 

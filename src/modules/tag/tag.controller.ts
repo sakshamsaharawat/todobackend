@@ -4,10 +4,10 @@ import { TagService } from "@tag/tag.service";
 import { CreateTagDto } from "@tag/dto/tag-create.dto";
 import { UpdateTagDto } from "@tag/dto/tag-update.dto";
 import { JwtAuthGuard } from "src/middlewares/logger.middleware";
-import { CurrentUserType } from "../user/interface/current-user.interface";
+import { CurrentUserType } from "@user/interface/current-user.interface";
 import { TagGetDto } from '@tag/dto/tag-get-dto';
 import { Tags } from '@tag/schema/tag.schema';
-import { BooleanMessage } from './interface/boolean-message.interface';
+import { BooleanMessage } from '@list/interface/boolean-message.interface';
 import { TagDeleteDto } from '@tag/dto/tag-delete.dto';
 
 @Controller('tag')

@@ -2,10 +2,22 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 @Schema({ timestamps: true })
 export class User {
-  @Prop({ required: true })
+  @Prop({
+    required: true,
+    trim: true,
+    minlength: 3,
+    maxlength: 50,
+    match: /^[A-Za-z\s]+$/,
+  })
   first_name: string;
 
-  @Prop({ required: true })
+  @Prop({
+    required: true,
+    trim: true,
+    minlength: 3,
+    maxlength: 50,
+    match: /^[A-Za-z\s]+$/,
+  })
   last_name: string;
 
   @Prop({
@@ -51,9 +63,10 @@ export class User {
   address: string;
 
   @Prop({ required: false, trim: true, maxlength: 300 })
-  image_url: string
+  image_url: string;
 
   @Prop({ default: false })
-  isDeleted: boolean;
+  is_deleted: boolean;
 }
+
 export const UserSchema = SchemaFactory.createForClass(User);

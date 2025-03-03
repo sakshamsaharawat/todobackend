@@ -1,4 +1,3 @@
-import { ConfigService } from '@nestjs/config';
 import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { LoginUserDto } from '@user/dto/login-user.dto';
 import { CreateUserDto } from '@user/dto/create-user.dto';
@@ -8,16 +7,15 @@ import { User } from '@user/schema/user.schema';
 import { JwtService } from '@nestjs/jwt';
 import mongoose, { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
-import { LoginUser } from './interface/login-user.interface';
-import { CurrentUserType } from './interface/current-user.interface';
+import { LoginUser } from '@user/interface/login-user.interface';
+import { CurrentUserType } from '@user/interface/current-user.interface';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel('User')
     private readonly userModel: Model<User>,
-    private jwtService: JwtService,
-    private readonly configService: ConfigService
+    private readonly jwtService: JwtService,
   ) { }
   async create(createUserDto: CreateUserDto): Promise<{ success: boolean, message: string, token: string, data: User }> {
     const isEmailExist = await this.userModel.findOne({ email: createUserDto.email.toLowerCase() });
@@ -58,7 +56,7 @@ export class UserService {
 
   async update(updateUserDto: UpdateUserDto, user: CurrentUserType): Promise<{ success: boolean, message: string, data: User }> {
     const userId = new mongoose.Types.ObjectId(user.id);
-    const isUserExist = await this.userModel.findOne({ _id: userId, isDeleted: false });
+    const isUserExist = await this.userModel.findOne({ _id: userId, is_deleted: false });
     if (!isUserExist) {
       throw new NotFoundException("User not found.");
     }

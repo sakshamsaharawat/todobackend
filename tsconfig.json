@@ -32,6 +32,9 @@
       ],
       "@stickywall/*": [
         "src/modules/stickywall/*"
+      ],
+      "@userdecorator/*":[
+        "src/common/decorators/*"
       ]
     }
   }

@@ -35,7 +35,7 @@ export class TaskService {
             const existingTags = await this.tagModel.find({
                 _id: { $in: createTaskDto.tag_ids },
                 user_id,
-                isDeleted: false
+                is_deleted: false
             });
 
             if (existingTags.length !== createTaskDto.tag_ids.length) {
@@ -44,10 +44,11 @@ export class TaskService {
         }
 
         if (createTaskDto.list_id) {
+            console.log("createTaskDto.list_id", createTaskDto.list_id)
             const existingList = await this.ListModel.findOne({
                 _id: createTaskDto.list_id,
                 user_id,
-                isDeleted: false
+                is_deleted: false
             });
 
             if (!existingList) {
@@ -61,9 +62,9 @@ export class TaskService {
         newTask.due_date = new Date(`${createTaskDto.due_date}T00:00:00.000Z`);
         newTask.user_id = user_id;
         newTask.tag_ids = createTaskDto?.tag_ids?.map((id: string) => new mongoose.Types.ObjectId(id)) || [];
-        newTask.list_id = new mongoose.Types.ObjectId(createTaskDto.list_id);
-
+        newTask.list_id = createTaskDto.list_id ? new mongoose.Types.ObjectId(createTaskDto.list_id) : null;
         const task = await this.taskModel.create(newTask);
+        console.log(newTask.list_id)
         return { success: true, message: "Task created successfully.", data: task };
     }
 
@@ -74,7 +75,7 @@ export class TaskService {
             {
                 $match: {
                     user_id: userId,
-                    isDeleted: false,
+                    is_deleted: false,
                     due_date: {
                         $gte: new Date(getTaskDto.start_date),
                         $lt: new Date(getTaskDto.end_date)
@@ -89,7 +90,7 @@ export class TaskService {
                     pipeline: [
                         {
                             $match: {
-                                isDeleted: false
+                                is_deleted: false
                             }
                         }
                     ],
@@ -104,7 +105,7 @@ export class TaskService {
                     pipeline: [
                         {
                             $match: {
-                                isDeleted: false
+                                is_deleted: false
                             }
                         }
                     ],
@@ -128,7 +129,7 @@ export class TaskService {
                 $match: {
                     _id: updatedTask._id,
                     user_id: userId,
-                    isDeleted: false
+                    is_deleted: false
                 },
             },
             {
@@ -139,7 +140,7 @@ export class TaskService {
                     pipeline: [
                         {
                             $match: {
-                                isDeleted: false
+                                is_deleted: false
                             }
                         }
                     ],
@@ -154,7 +155,7 @@ export class TaskService {
                     pipeline: [
                         {
                             $match: {
-                                isDeleted: false
+                                is_deleted: false
                             }
                         }
                     ],
@@ -173,11 +174,11 @@ export class TaskService {
 
     async remove(deleteTaskDto: DeleteTaskDto, user: CurrentUserType): Promise<{ success: boolean, message: string }> {
         const userId = new mongoose.Types.ObjectId(user.id);
-        const task = await this.taskModel.findOne({ _id: deleteTaskDto.id, user_id: userId, isDeleted: false });
+        const task = await this.taskModel.findOne({ _id: deleteTaskDto.id, user_id: userId, is_deleted: false });
         if (!task) {
             throw new NotFoundException("Task not found.");
         }
-        await this.taskModel.findByIdAndUpdate(deleteTaskDto.id, { isDeleted: true });
+        await this.taskModel.findByIdAndUpdate(deleteTaskDto.id, { is_deleted: true });
         return { success: true, message: "Task Deleted successfully." }
     }
 }

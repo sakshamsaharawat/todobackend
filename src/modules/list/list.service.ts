@@ -33,14 +33,14 @@ export class ListService {
 
     async findAll(user: CurrentUserType): Promise<{ success: boolean, message: string, data: Lists[] }> {
         const userId = new mongoose.Types.ObjectId(user.id);
-        const lists = await this.ListModel.find({ user_id: userId, isDeleted: false });
+        const lists = await this.ListModel.find({ user_id: userId, is_deleted: false });
 
         return { success: true, message: lists.length ? "Lists fetched successfully." : "No list found.", data: lists };
     }
 
     async findOne(ListGetDto: ListGetDto, user: CurrentUserType): Promise<{ success: boolean, message: string, data: Lists }> {
         const userId = new mongoose.Types.ObjectId(user.id);
-        const list = await this.ListModel.findOne({ _id: new mongoose.Types.ObjectId(ListGetDto.id), user_id: userId, isDeleted: false });
+        const list = await this.ListModel.findOne({ _id: new mongoose.Types.ObjectId(ListGetDto.id), user_id: userId, is_deleted: false });
         if (!list) {
             throw new NotFoundException("List not found.");
         }
@@ -59,11 +59,11 @@ export class ListService {
 
     async remove(ListDeleteDto: ListDeleteDto, @CurrentUser() user: CurrentUserType): Promise<BooleanMessage> {
         const userId = new mongoose.Types.ObjectId(user.id);
-        const list = await this.ListModel.findOne({ _id: ListDeleteDto.id, user_id: userId, isDeleted: false });
+        const list = await this.ListModel.findOne({ _id: ListDeleteDto.id, user_id: userId, is_deleted: false });
         if (!list) {
             throw new NotFoundException("List not found.");
         }
-        await this.ListModel.findByIdAndUpdate(ListDeleteDto.id, { isDeleted: true });
+        await this.ListModel.findByIdAndUpdate(ListDeleteDto.id, { is_deleted: true });
         return { success: true, message: "List deleted successfully." };
     }
 }

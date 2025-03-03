@@ -1,33 +1,39 @@
+import { Transform } from 'class-transformer';
 import {
+  IsAlpha,
   IsEmail,
   IsNotEmpty,
   IsString,
+  Length,
   Matches,
   MinLength,
 } from 'class-validator';
 
 export class CreateUserDto {
-  @IsString({ message: 'First name is required.' })
-  @IsNotEmpty({ message: 'First name must not be empty.' })
-  @Matches(/^[a-zA-Z]+$/, { message: 'First name cannot contain numbers or special characters.' })
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
+  @Matches(/^[A-Za-z\s]+$/, { message: 'First name must contain only letters and spaces' })
+  @Length(3, 50, { message: 'First name must be between 2 and 50 characters' })
+  @IsNotEmpty({ message: 'First name is required' })
   first_name: string;
 
-  @IsString({ message: 'Last name is required.' })
-  @IsNotEmpty({ message: 'Last name must not be empty.' })
-  @Matches(/^[a-zA-Z]+$/, { message: 'Last name cannot contain numbers or special characters.' })
-  @Matches(/^\S.*\S$/, { message: 'Last name cannot have spaces before or after.' })
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
+  @Matches(/^[A-Za-z\s]+$/, { message: 'Last_name must contain only letters and spaces' })
+  @Length(3, 50, { message: 'Last_name must be between 2 and 50 characters' })
+  @IsNotEmpty({ message: 'Last_name is required' })
   last_name: string;
 
-  @IsNotEmpty({ message: 'Email is required.' })
-  @IsEmail({}, { message: 'Email must be a valid email address.' })
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   @Matches(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, {
     message: 'Email must be in a proper format (e.g., username@domain.com).',
   })
+  @IsEmail({}, { message: 'Email must be a valid email address.' })
+  @IsNotEmpty({ message: 'Email is required.' })
   email: string;
 
-  @IsNotEmpty({ message: 'Password is required.' })
-  @IsString({ message: 'Password must be a string.' })
-  @MinLength(4, { message: 'Password must be at least 6 characters long.' })
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   @Matches(/^\S+$/, { message: 'Password cannot contain spaces.' })
+  @MinLength(4, { message: 'Password must be at least 6 characters long.' })
+  @IsString({ message: 'Password must be a string.' })
+  @IsNotEmpty({ message: 'Password is required.' })
   password: string;
 }

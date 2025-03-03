@@ -5,8 +5,8 @@ import { UpdateTagDto } from '@tag/dto/tag-update.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Tags } from '@tag/schema/tag.schema';
 import mongoose, { Model } from 'mongoose';
-import { BooleanMessage } from './interface/boolean-message.interface';
-import { CurrentUserType } from '../user/interface/current-user.interface';
+import { BooleanMessage } from '@list/interface/boolean-message.interface';
+import { CurrentUserType } from '@user/interface/current-user.interface';
 import { TagGetDto } from '@tag/dto/tag-get-dto';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 
@@ -32,13 +32,13 @@ export class TagService {
 
     async findAll(user: CurrentUserType): Promise<{ success: boolean, message: string, data: Tags[] }> {
         const user_id = new mongoose.Types.ObjectId(user.id);
-        const tags = await this.tagModel.find({ user_id, isDeleted: false });
+        const tags = await this.tagModel.find({ user_id, is_deleted: false });
         return { success: true, message: tags.length ? "Tags fetched successfully." : "Tag not found", data: tags };
     }
 
     async findOne(tagGetDto: TagGetDto, user: CurrentUserType): Promise<{ success: boolean, message: string, data: Tags }> {
         const user_id = new mongoose.Types.ObjectId(user.id);
-        const tag = await this.tagModel.findOne({ _id: new mongoose.Types.ObjectId(tagGetDto.id), user_id, isDeleted: false });
+        const tag = await this.tagModel.findOne({ _id: new mongoose.Types.ObjectId(tagGetDto.id), user_id, is_deleted: false });
         if (!tag) {
             throw new NotFoundException("Tag not found.");
         }
@@ -56,16 +56,16 @@ export class TagService {
             throw new BadRequestException("Tag already exist.");
         }
         const updatedTag = await this.tagModel.findByIdAndUpdate(updateTagDto.id, updateTagDto, { new: true });
-        return { success: true, message: "", data: updatedTag };
+        return { success: true, message: "Tag updated successfully.", data: updatedTag };
     }
 
     async remove(tagDeleteDto: TagDeleteDto, @CurrentUser() user: CurrentUserType): Promise<BooleanMessage> {
         const user_id = new mongoose.Types.ObjectId(user.id);
-        const tag = await this.tagModel.findOne({ _id: tagDeleteDto.id, user_id, isDeleted: false });
+        const tag = await this.tagModel.findOne({ _id: tagDeleteDto.id, user_id, is_deleted: false });
         if (!tag) {
             throw new NotFoundException("Tag not found.");
         }
-        await this.tagModel.findByIdAndUpdate(tagDeleteDto.id, { isDeleted: true });
+        await this.tagModel.findByIdAndUpdate(tagDeleteDto.id, { is_deleted: true });
         return { success: true, message: "Tag Deleted successfully." };
     }
 }

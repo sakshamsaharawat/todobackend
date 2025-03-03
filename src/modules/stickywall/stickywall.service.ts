@@ -14,7 +14,7 @@ export class StickywallService {
 
   async create(createStickwallyDto: CreateStickwallyDto, user: CurrentUserType): Promise<{ success: boolean, message: string, data: StickyWall }> {
     const userId = new mongoose.Types.ObjectId(user.id);
-    const stickywall = await this.stickywallModel.findOne({ title: { $regex: new RegExp(`^${createStickwallyDto.title}$`, "i") }, user_id: userId, isDeleted: false })
+    const stickywall = await this.stickywallModel.findOne({ title: { $regex: new RegExp(`^${createStickwallyDto.title}$`, "i") }, user_id: userId, is_deleted: false })
     if (stickywall) {
       throw new BadRequestException("Stickywall already exist.")
     }
@@ -29,7 +29,7 @@ export class StickywallService {
 
   async findAll(user: CurrentUserType): Promise<{ success: boolean, message: string, data: StickyWall[] }> {
     const userId = new mongoose.Types.ObjectId(user.id);
-    const stickyWall = await this.stickywallModel.find({ user_id: userId, isDeleted: false })
+    const stickyWall = await this.stickywallModel.find({ user_id: userId, is_deleted: false })
     return { success: true, message: "StickyWall fateched successfully.", data: stickyWall }
   }
 }
