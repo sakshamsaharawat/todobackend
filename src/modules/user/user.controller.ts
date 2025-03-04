@@ -1,5 +1,5 @@
 import { CurrentUserType } from './interface/current-user.interface';
-import { Controller, Get, Post, Body, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Delete, UseGuards } from '@nestjs/common';
 import { UserService } from '@user/user.service';
 import { LoginUserDto } from '@user/dto/login-user.dto';
 import { CreateUserDto } from '@user/dto/create-user.dto';
@@ -35,8 +35,9 @@ export class UserController {
     return this.userService.update(updateUserDto, user);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userService.remove(+id);
+  @Delete()
+  @UseGuards(JwtAuthGuard)
+  remove(@CurrentUser() user: CurrentUserType): Promise<{ success: boolean, message: string }> {
+    return this.userService.remove(user);
   }
 }

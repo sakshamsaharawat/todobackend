@@ -34,7 +34,7 @@ export class UserService {
 
   async login(loginUserDto: LoginUserDto): Promise<LoginUser> {
     const { email, password } = loginUserDto;
-    const user = await (this.userModel.findOne({ email: email.toLowerCase() })).select('+password');
+    const user = await (this.userModel.findOne({ email: email.toLowerCase(), is_deleted: false })).select('+password');
     if (!user) {
       throw new BadRequestException("User not found.");
     }
@@ -65,7 +65,12 @@ export class UserService {
     return { success: true, message: "User updated successfully.", data: updatedUser };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove( user: CurrentUserType): Promise<{ success: boolean, message: string }> {
+    const isUserExist = await this.userModel.findOne({ _id: user.id, is_deleted: false });
+    if (!isUserExist) {
+      throw new NotFoundException("User not found.");
+    }
+    await this.userModel.findByIdAndUpdate(user.id, { is_deleted: true })
+    return { success: true, message: "User deleted successfully." };
   }
 }
