@@ -9,6 +9,7 @@ import { GetTaskDto } from '@task/dto/get-task.dto';
 import { UpdateTaskDto } from '@task/dto/update-task.dto';
 import { Task } from '@task/schemas/task.schema';
 import { DeleteTaskDto } from '@task/dto/delete-task.dto';
+import { DeleteManyTaskDto } from './dto/delete-many-task';
 
 @Controller('task')
 export class TaskController {
@@ -17,7 +18,7 @@ export class TaskController {
     @Post("create")
     @UseGuards(JwtAuthGuard)
     create(@Body() createTaskDto: CreateTaskDto, @CurrentUser() user: CurrentUserType): Promise<CreateTask> {
-        console.log("createTaskDto",createTaskDto)
+        console.log("createTaskDto", createTaskDto)
         return this.TaskService.create(createTaskDto, user);
     }
 
@@ -37,5 +38,11 @@ export class TaskController {
     @UseGuards(JwtAuthGuard)
     remove(@Param() deleteTaskDto: DeleteTaskDto, @CurrentUser() user: CurrentUserType): Promise<{ success: boolean, message: string }> {
         return this.TaskService.remove(deleteTaskDto, user);
+    }
+
+    @Post("deletemany")
+    @UseGuards(JwtAuthGuard)
+    removemany(@Body() deleteManyTaskDto: DeleteManyTaskDto, @CurrentUser() user: CurrentUserType): Promise<{ success: boolean, message: string }> {
+        return this.TaskService.removemany(deleteManyTaskDto, user);
     }
 }

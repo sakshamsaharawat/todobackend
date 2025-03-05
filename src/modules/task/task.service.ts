@@ -11,6 +11,7 @@ import { CreateTask } from './interface/create-task.interface';
 import { GetTaskDto } from '@task/dto/get-task.dto';
 import { UpdateTaskDto } from '@task/dto/update-task.dto';
 import { DeleteTaskDto } from '@task/dto/delete-task.dto';
+import { DeleteManyTaskDto } from './dto/delete-many-task';
 
 @Injectable()
 export class TaskService {
@@ -25,26 +26,21 @@ export class TaskService {
 
     async create(createTaskDto: CreateTaskDto, user: CurrentUserType): Promise<CreateTask> {
         const user_id = new mongoose.Types.ObjectId(user.id);
-
         if (createTaskDto?.tag_ids?.length) {
             const uniqueTagIds = [...new Set(createTaskDto.tag_ids)];
             if (uniqueTagIds.length !== createTaskDto.tag_ids.length) {
                 throw new BadRequestException("Duplicate tag IDs are not allowed.");
             }
-
             const existingTags = await this.tagModel.find({
                 _id: { $in: createTaskDto.tag_ids },
                 user_id,
                 is_deleted: false
             });
-
             if (existingTags.length !== createTaskDto.tag_ids.length) {
                 throw new BadRequestException("Tag IDs are invalid or do not belong to the user.");
             }
         }
-
         if (createTaskDto.list_id) {
-            console.log("createTaskDto.list_id", createTaskDto.list_id)
             const existingList = await this.ListModel.findOne({
                 _id: createTaskDto.list_id,
                 user_id,
@@ -64,7 +60,6 @@ export class TaskService {
         newTask.tag_ids = createTaskDto?.tag_ids?.map((id: string) => new mongoose.Types.ObjectId(id)) || [];
         newTask.list_id = createTaskDto.list_id ? new mongoose.Types.ObjectId(createTaskDto.list_id) : null;
         const task = await this.taskModel.create(newTask);
-        console.log(newTask.list_id)
         return { success: true, message: "Task created successfully.", data: task };
     }
 
@@ -180,5 +175,16 @@ export class TaskService {
         }
         await this.taskModel.findByIdAndUpdate(deleteTaskDto.id, { is_deleted: true });
         return { success: true, message: "Task Deleted successfully." }
+    }
+
+    async removemany(deleteManyTaskDto: DeleteManyTaskDto, user: CurrentUserType): Promise<{ success: boolean, message: string }> {
+        const userId = new mongoose.Types.ObjectId(user.id);
+        const isTasksExist = await this.taskModel.find({ user_id: userId, _id: deleteManyTaskDto.ids, is_deleted: false })
+        if (isTasksExist.length === 0) {
+            throw new NotFoundException("Tasks not found.");
+        }
+        await this.taskModel.updateMany({ _id: { $in: deleteManyTaskDto.ids }, user_id: userId },
+            { $set: { is_deleted: true, deleteAt: new Date() } });
+        return { success: true, message: `Tasks Deleted successfully.` }
     }
 }
