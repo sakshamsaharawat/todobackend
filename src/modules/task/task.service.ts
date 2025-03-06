@@ -185,6 +185,6 @@ export class TaskService {
         }
         await this.taskModel.updateMany({ _id: { $in: deleteManyTaskDto.ids }, user_id: userId },
             { $set: { is_deleted: true, deleteAt: new Date() } });
-        return { success: true, message: `Tasks Deleted successfully.` }
+        return { success: true, message: "Tasks Deleted successfully." }
     }
 }
