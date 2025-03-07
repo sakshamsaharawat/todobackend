@@ -9,12 +9,13 @@ import { BooleanMessage } from './interface/boolean-message.interface';
 import { CurrentUserType } from '../user/interface/current-user.interface';
 import { ListGetDto } from '@list/dto/list-get-dto';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { Task } from '@task/schemas/task.schema';
 
 @Injectable()
 export class ListService {
     constructor(
-        @InjectModel(Lists.name)
-        private readonly ListModel: Model<Lists>
+        @InjectModel(Lists.name) private readonly ListModel: Model<Lists>,
+        @InjectModel(Task.name) private readonly taskModel: Model<Task>
     ) { }
 
     async create(createListDto: CreateListDto, user: CurrentUserType): Promise<{ success: boolean, message: string, data: Lists }> {
@@ -31,11 +32,33 @@ export class ListService {
         return { success: true, message: "List created successfully.", data: list };
     }
 
-    async findAll(user: CurrentUserType): Promise<{ success: boolean, message: string, data: Lists[] }> {
+    async findAll(user: CurrentUserType): Promise<{ success: boolean, message: string, data: Lists[], listCount: { _id: string, count: number }[] }> {
         const userId = new mongoose.Types.ObjectId(user.id);
         const lists = await this.ListModel.find({ user_id: userId, is_deleted: false });
+        const listCount = await this.taskModel.aggregate([
+            {
+                $match: {
+                    user_id: userId,
+                    is_deleted: false
+                }
+            },
+            {
+                $group: {
+                    _id: "$list_id",
+                    count: { $sum: 1 }
+                }
+            }
+        ]);
 
-        return { success: true, message: lists.length ? "Lists fetched successfully." : "No list found.", data: lists };
+        // const listCount = listCountData.reduce((acc, item) => {
+        //     if (item._id) { 
+        //         acc[item._id.toString()] = item.count;
+        //     }
+        //     return acc;
+        // }, {} as Record<string, number>);
+
+
+        return { success: true, message: lists.length ? "Lists fetched successfully." : "No list found.", data: lists, listCount };
     }
 
     async findOne(ListGetDto: ListGetDto, user: CurrentUserType): Promise<{ success: boolean, message: string, data: Lists }> {

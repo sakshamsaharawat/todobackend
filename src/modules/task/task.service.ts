@@ -113,7 +113,16 @@ export class TaskService {
                 }
             },
         ])
-        return { success: true, message: "Tasks fetched successfully.", data: tasks };
+        // const listCount: Record<string, number> = tasks.reduce((acc, task) => {
+        //     const listId = task.list_id?.toString();
+        //     console.log("listId------",listId)
+        //     if (listId) {
+        //         acc[listId] = (acc[listId] || 0) + 1;
+        //     }
+        //     console.log("listCount---",listCount)
+        //     return acc;
+        // }, {} as Record<string, number>);
+        return { success: true, message: "Tasks fetched successfully.", data: tasks,};
     }
 
     async update(updateTaskDto: UpdateTaskDto, user: CurrentUserType): Promise<{ success: boolean, message: string, data: Task }> {
