@@ -113,15 +113,7 @@ export class TaskService {
                 }
             },
         ])
-        // const listCount: Record<string, number> = tasks.reduce((acc, task) => {
-        //     const listId = task.list_id?.toString();
-        //     console.log("listId------",listId)
-        //     if (listId) {
-        //         acc[listId] = (acc[listId] || 0) + 1;
-        //     }
-        //     console.log("listCount---",listCount)
-        //     return acc;
-        // }, {} as Record<string, number>);
+       
         return { success: true, message: "Tasks fetched successfully.", data: tasks,};
     }
 
